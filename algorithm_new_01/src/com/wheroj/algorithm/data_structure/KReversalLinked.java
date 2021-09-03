@@ -1,5 +1,8 @@
 package com.wheroj.algorithm.data_structure;
 
+/**
+ * https://leetcode-cn.com/problems/reverse-nodes-in-k-group/
+ */
 public class KReversalLinked {
 
     public static class ListNode {
@@ -67,9 +70,10 @@ public class KReversalLinked {
 
     private static void print(ListNode header) {
         while (header != null) {
-            System.out.println(header.val);
+            System.out.print(header.val + " ");
             header = header.next;
         }
+        System.out.println();
     }
 
     public static void main(String[] args) {
