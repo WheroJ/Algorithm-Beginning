@@ -3,3 +3,6 @@ out/*
 *.iml
 .gitignore
 lib/*
+/bin/
+.project
+.classpath
