@@ -1,4 +1,4 @@
-package com.wheroj.algorithm.new01;
+package com.wheroj.algorithm.sort;
 
 public class Sort {
 

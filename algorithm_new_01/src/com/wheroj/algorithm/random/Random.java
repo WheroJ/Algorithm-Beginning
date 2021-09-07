@@ -1,4 +1,4 @@
-package com.wheroj.algorithm.new02;
+package com.wheroj.algorithm.random;
 
 public class Random {
 

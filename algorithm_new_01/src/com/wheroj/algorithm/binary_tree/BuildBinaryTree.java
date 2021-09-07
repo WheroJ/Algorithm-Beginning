@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
  */
-public class BinaryTreeTraversal {
+public class BuildBinaryTree {
 
     static class TreeNode {
         int val;

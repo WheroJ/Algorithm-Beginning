@@ -46,18 +46,32 @@ public class BalancedBinaryTree {
         return false;
     }
 
+    private static int treeMaxHigh(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+
+        int left = treeMaxHigh(node.left) + 1;
+        int right = treeMaxHigh(node.right) + 1;
+        return Math.max(left, right);
+    }
+
     /**
      * 题目：任意子树，左树的最大值小于x，右树的最小值大于x，则是搜索二叉树
      * 每一颗子树都应该是搜索二叉树
      * @return
      */
-    /*public static boolean isValidBST(TreeNode root) {
+    public static boolean isValidBST(TreeNode root) {
         if (root == null) {
             return true;
         }
 
         // 首先判断当前节点是否是搜索二叉树
-        boolean centerSearched = treeMaxVal(root.left) < root.val && treeMinVal(root.right) > root.val;
+        int leftMax = treeMaxVal(root.left);
+        int rightMin = treeMinVal(root.right);
+        boolean leftBST = (leftMax == Integer.MIN_VALUE && root.left == null) || leftMax < root.val;
+        boolean rightBST = (rightMin == Integer.MAX_VALUE && root.right == null) || rightMin > root.val;
+        boolean centerSearched = leftBST && rightBST;
         if (centerSearched) {
             // 当前节点是搜索二叉树，再判断left和right节点是否是搜索二叉树
             boolean leftSearched = true, rightSearched = true;
@@ -70,23 +84,12 @@ public class BalancedBinaryTree {
             return leftSearched && rightSearched;
         }
         return false;
-    }*/
-
-    private static int treeMaxHigh(TreeNode node) {
-        if (node == null) {
-            return 0;
-        }
-
-        int left = treeMaxHigh(node.left) + 1;
-        int right = treeMaxHigh(node.right) + 1;
-        return Math.max(left, right);
     }
 
     private static int treeMaxVal(TreeNode node) {
         if (node == null) {
             return Integer.MIN_VALUE;
         }
-
         int leftVal = treeMaxVal(node.left);
         int rightVal = treeMaxVal(node.right);
         int curVal = node.val;
@@ -97,7 +100,6 @@ public class BalancedBinaryTree {
         if (node == null) {
             return Integer.MAX_VALUE;
         }
-
         int leftVal = treeMinVal(node.left);
         int rightVal = treeMinVal(node.right);
         int curVal = node.val;
@@ -110,25 +112,52 @@ public class BalancedBinaryTree {
         boolean isBST;
     }
 
-    public static boolean isValidBST(TreeNode root) {
-        return process(root, 0, 0).isBST;
+    /**
+     * 此方法解法更优，时间复杂度低
+     * 题目：任意子树，左树的最大值小于x，右树的最小值大于x，则是搜索二叉树
+     * 每一颗子树都应该是搜索二叉树
+     * @param root
+     * @return
+     */
+    public static boolean isValidBST2(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        return process(root).isBST;
     }
 
-    private static Info process(TreeNode root, int preMin, int preMax) {
-        if (root == null) {
+    private static Info process(TreeNode node) {
+        if (node == null) {
             return null;
         }
 
-        Info leftInfo = process(root.left, preMin, preMax);
-        Info rightInfo = process(root.right, preMin, preMax);
+        Info leftInfo = process(node.left);
+        Info rightInfo = process(node.right);
 
-        Info rootInfo = new Info();
+        Info curInfo = new Info();
+        curInfo.max = node.val;
+        curInfo.min = node.val;
         if (leftInfo != null) {
-            rootInfo.max = preMax;
+            curInfo.max = Math.max(curInfo.max, leftInfo.max);
+            curInfo.min = Math.min(curInfo.min, leftInfo.min);
         }
+
         if (rightInfo != null) {
+            curInfo.max = Math.max(curInfo.max, rightInfo.max);
+            curInfo.min = Math.min(curInfo.min, rightInfo.min);
         }
-        return rootInfo;
+
+        boolean isBST = true;
+        if (leftInfo != null && rightInfo != null) {
+            isBST = leftInfo.max < node.val && rightInfo.min > node.val && leftInfo.isBST && rightInfo.isBST;
+        } else if (leftInfo != null) {
+            isBST = leftInfo.max < node.val && leftInfo.isBST;
+        } else if (rightInfo != null) {
+            isBST = rightInfo.min > node.val && rightInfo.isBST;
+        }
+        curInfo.isBST = isBST;
+
+        return curInfo;
     }
 
     public static void main(String[] args) {
