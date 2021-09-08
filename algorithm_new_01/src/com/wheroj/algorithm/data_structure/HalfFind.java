@@ -1,8 +1,5 @@
 package com.wheroj.algorithm.data_structure;
 
-import com.wheroj.algorithm.binary_tree.MergeKList;
-
-import javax.swing.tree.TreeNode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -147,8 +144,6 @@ public class HalfFind {
     public static void main(String[] args) {
         int[] arr = new int[]{1,4,5,7,9,10};
         System.out.println(sortFind(arr, 1));
-
-        MergeKList.ListNode[] listNodes = new MergeKList.ListNode[3];
 
         int[] arr2 = new int[]{1,4,5,7,9,10,11,13,19};
         System.out.println(sortFind(arr, 13));
