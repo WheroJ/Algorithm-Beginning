@@ -1,16 +1,22 @@
 package com.wheroj.algorithm.sort;
 
 import java.util.Arrays;
+import java.util.Stack;
 
 /**
- * 归并排序：递归实现，非递归实现
+ * 快速排序
  */
-public class MergeSort {
+public class QuickSort {
 
-    public static void mergeSort(int[] arr) {
+    /**
+     * 递归实现
+     * @param arr
+     */
+    public static void quickSort(int[] arr) {
         if (arr == null || arr.length < 2) {
             return;
         }
+
         process(arr, 0, arr.length - 1);
     }
 
@@ -19,78 +25,68 @@ public class MergeSort {
             return;
         }
 
-        int mid = L + ((R - L) >> 1);
-        process(arr, L, mid);
-        process(arr, mid + 1, R);
-        merge(arr, L, mid, R);
+        int[] range = f(arr, L, R);
+        process(arr, L, range[0]);
+        process(arr, range[1], R);
     }
 
-    private static void merge(int[] arr, int l, int mid, int r) {
-        if (l >= r || mid + 1 > r) {
-            return ;
-        }
-
-        int[] heap = new int[r - l + 1];
-
-        int index = -1;
-        int LStart = l;
-        int RStart = mid + 1;
-        while (LStart <= mid && RStart <= r) {
-            if (arr[LStart] < arr[RStart]) {
-                heap[++index] = arr[LStart++];
+    private static int[] f(int[] arr, int L, int R) {
+        int index = 0, lessLeft = -1, gtRight = R;
+        while (index < gtRight) {
+            if (arr[index] < arr[R]) {
+                swap(arr, index++, ++lessLeft);
+            } else if (arr[index] > arr[R]) {
+                swap(arr, index, --gtRight);
             } else {
-                heap[++index] = arr[RStart++];
+                index++;
             }
         }
 
-        while (LStart <= mid) {
-            heap[++index] = arr[LStart++];
-        }
+        swap(arr, gtRight, R);
+        return new int[] {lessLeft, gtRight + 1};
+    }
 
-        while (RStart <= r) {
-            heap[++index] = arr[RStart++];
-        }
+    static class Job {
+        int left;
+        int right;
 
-        index = -1;
-        for (int i = l; i <= r; i++) {
-            arr[i] = heap[++index];
+        public Job(int left, int right) {
+            this.left = left;
+            this.right = right;
         }
     }
 
     /**
-     * 非递归实现归并排序
+     * 非递归实现
      * @param arr
      */
-    public static void mergeSort2(int[] arr) {
+    public static void quickSort2(int[] arr) {
         if (arr == null || arr.length < 2) {
             return;
         }
 
-        int step = 1;
-        int N = arr.length;
-        while (step < N) {
-//            System.out.println(step);
-
-            int L = -1, R = -1, M = -1;
-            while (M < N - 1) {
-                L = R + 1;
-                R = L + (step<<1) - 1;
-                M = L + ((R - L)>>1);
-                M = Math.min(M, N - 1);
-                R = Math.min(R, N - 1);
-
-//                System.out.print("Merge Before:");
-//                print(arr);
-                merge(arr, L, M, R);
-//                System.out.print("Merge After [" + L + "->" + M + "->" + R + "] : ");
-//                print(arr);
+        Stack<Job> stack = new Stack<>();
+        stack.push(new Job(0, arr.length - 1));
+        while (!stack.isEmpty()) {
+            Job job = stack.pop();
+            int[] range = f(arr, job.left, job.right);
+            if (job.left < range[0]) {
+                stack.push(new Job(job.left, range[0]));
             }
 
-            if (step > N/2) {
-                break;
+            if (job.right > range[1]) {
+                stack.push(new Job(range[1], job.right));
             }
-            step<<=1;
         }
+    }
+
+    private static void swap(int[] arr, int i, int j) {
+        if (i == j) {
+            return;
+        }
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
     }
 
     private static int[] randomArray(int maxSize, int maxVal) {
@@ -136,10 +132,10 @@ public class MergeSort {
             int[] arr = randomArray(maxSize, maxVal);
             int[] arr1 = copyArray(arr);
             int[] arr2 = copyArray(arr);
-            mergeSort(arr1);
-            mergeSort2(arr2);
+            quickSort(arr1);
+            quickSort2(arr2);
             Arrays.sort(arr);
-            if (!arrayEquals(arr1, arr) || !arrayEquals(arr, arr2)) {
+            if (!arrayEquals(arr1, arr) || !arrayEquals(arr2, arr)) {
                 print(arr);
                 print(arr1);
                 print(arr2);
@@ -148,8 +144,9 @@ public class MergeSort {
         }
         System.out.println("没有问题！");
 
-        int[] arr = new int[] {1,3,5,7,9,2,4,6,8,10};
-        mergeSort2(arr);
+        int[] arr = new int[] {7,4,3,4,2,5,2,7,6,5,8,9,9,5};
+        quickSort(arr);
         print(arr);
     }
+
 }
